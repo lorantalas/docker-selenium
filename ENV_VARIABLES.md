@@ -53,7 +53,7 @@
 | SE_HTTPS_PRIVATE_KEY | /opt/selenium/secrets/tls.key |  | --https-private-key |
 | SE_ENABLE_TRACING | true |  | --tracing |
 | SE_OTEL_EXPORTER_ENDPOINT |  |  | -Dotel.exporter.otlp.endpoint= |
-| SE_OTEL_SERVICE_NAME | selenium-event-bus |  | -Dotel.resource.attributes=service.name= |
+| SE_OTEL_SERVICE_NAME | selenium-router |  | -Dotel.resource.attributes=service.name= |
 | SE_OTEL_JVM_ARGS |  |  |  |
 | SE_OTEL_TRACES_EXPORTER | otlp |  | -Dotel.traces.exporter |
 | SE_OTEL_JAVA_GLOBAL_AUTOCONFIGURE_ENABLED | true |  |  |
@@ -75,7 +75,7 @@
 | SE_EVENT_BUS_PUBLISH_PORT | 4442 |  |  |
 | SE_EVENT_BUS_SUBSCRIBE_PORT | 4443 |  |  |
 | SE_NODE_SESSION_TIMEOUT | 300 |  | --session-timeout |
-| SE_NODE_ENABLE_MANAGED_DOWNLOADS |  |  | --enable-managed-downloads |
+| SE_NODE_ENABLE_MANAGED_DOWNLOADS | true | This causes the Node to auto manage files downloaded for a given session on the Node | --enable-managed-downloads |
 | SE_NODE_ENABLE_CDP |  |  | --enable-cdp |
 | SE_NODE_REGISTER_PERIOD | 120 |  | --register-period |
 | SE_NODE_REGISTER_CYCLE | 10 |  | --register-cycle |
@@ -144,4 +144,14 @@
 | SE_NODE_REGISTER_SHUTDOWN_ON_FAILURE | true | If this flag is enabled, the Node will shut down after the register period is completed. This is useful for container environments to restart and register again. If restarted multiple times, the Node container status will be CrashLoopBackOff | --register-shutdown-on-failure |
 | SE_NODE_RELAY_BROWSER_VERSION |  |  |  |
 | SE_NODE_RELAY_ONLY | true |  |  |
-| SE_EXTRA_LIBS | | Extra jars to add to the classpath | --ext |
+| SE_EXTRA_LIBS |  | Extra jars to add to the classpath in server component bootstrap | --ext |
+| SE_NODE_CONNECTION_LIMIT_PER_SESSION | 10 |  |  |
+| SE_SUPERVISORD_UNIX_SERVER_PASSWORD | secret |  |  |
+| SE_FFMPEG_THREADS |  |  |  |
+| SE_OTEL_RESOURCE_ATTRIBUTES |  | Add more attributes to the OpenTelemetry resource, e.g. "service.version=1.0.0,deployment.environment=production" |  |
+| SE_VIDEO_BUFSIZE |  |  |  |
+| SE_VIDEO_CRF |  |  |  |
+| SE_VIDEO_MAXRATE |  |  |  |
+| SE_NODE_DELETE_SESSION_ON_UI | true | Enable capability to support deleting session on Grid UI | --delete-session-on-ui |
+| SE_UPDATE_CHROME_COMPONENTS |  | Applicable for node-chrome, standalone-chrome (arch linux/amd64). Update the latest version of Chrome and ChromeDriver at the beginning of the container startup. Read more: [#2872](https://github.com/SeleniumHQ/docker-selenium/pull/2872) |  |
+| SE_DISTRIBUTOR_SLOT_SELECTOR |  | Full class name of non-default slot selector. This is used to select a slot in a Node once the Node has been matched. | --slot-selector |

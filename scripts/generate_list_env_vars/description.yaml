@@ -228,7 +228,8 @@
   description: ''
   cli: --session-timeout
 - name: SE_NODE_ENABLE_MANAGED_DOWNLOADS
-  description: ''
+  description: This causes the Node to auto manage files downloaded for a given session
+    on the Node
   cli: --enable-managed-downloads
 - name: SE_NODE_ENABLE_CDP
   description: ''
@@ -440,3 +441,39 @@
 - name: SE_NODE_RELAY_ONLY
   description: ''
   cli: ''
+- name: SE_EXTRA_LIBS
+  description: Extra jars to add to the classpath in server component bootstrap
+  cli: --ext
+- name: SE_NODE_CONNECTION_LIMIT_PER_SESSION
+  description: ''
+  cli: ''
+- name: SE_SUPERVISORD_UNIX_SERVER_PASSWORD
+  description: ''
+  cli: ''
+- name: SE_FFMPEG_THREADS
+  description: ''
+  cli: ''
+- name: SE_OTEL_RESOURCE_ATTRIBUTES
+  description: Add more attributes to the OpenTelemetry resource, e.g. "service.version=1.0.0,deployment.environment=production"
+  cli: ''
+- name: SE_VIDEO_BUFSIZE
+  description: ''
+  cli: ''
+- name: SE_VIDEO_CRF
+  description: ''
+  cli: ''
+- name: SE_VIDEO_MAXRATE
+  description: ''
+  cli: ''
+- name: SE_NODE_DELETE_SESSION_ON_UI
+  description: Enable capability to support deleting session on Grid UI
+  cli: --delete-session-on-ui
+- name: SE_UPDATE_CHROME_COMPONENTS
+  description: 'Applicable for node-chrome, standalone-chrome (arch linux/amd64).
+    Update the latest version of Chrome and ChromeDriver at the beginning of the container
+    startup. Read more: [#2872](https://github.com/SeleniumHQ/docker-selenium/pull/2872)'
+  cli: ''
+- name: SE_DISTRIBUTOR_SLOT_SELECTOR
+  description: Full class name of non-default slot selector. This is used to select
+    a slot in a Node once the Node has been matched.
+  cli: --slot-selector

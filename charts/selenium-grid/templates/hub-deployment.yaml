@@ -7,11 +7,8 @@ metadata:
   labels: &hub_labels
     app: {{ template "seleniumGrid.hub.fullname" . }}
     app.kubernetes.io/name: {{ template "seleniumGrid.hub.fullname" . }}
-    {{- include "seleniumGrid.commonLabels" . | nindent 4 }}
+    {{- include "seleniumGrid.commonLabels" $ | nindent 4 }}
     {{- with .Values.hub.labels }}
-      {{- toYaml . | nindent 4 }}
-    {{- end }}
-    {{- with .Values.customLabels }}
       {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
@@ -110,6 +107,8 @@ spec:
                   fieldPath: status.hostIP
             - name: SE_OTEL_SERVICE_NAME
               value: '{{ template "seleniumGrid.hub.fullname" . }}'
+            - name: SE_OTEL_RESOURCE_ATTRIBUTES
+              value: {{ include "seleniumGrid.tracing.attributes" $ | quote }}
             - name: SE_HUB_HOST
               valueFrom:
                 fieldRef:
@@ -130,6 +129,10 @@ spec:
             {{- else if (eq (include "seleniumGrid.useKEDA" $) "true") }}
             - name: SE_NEW_SESSION_THREAD_POOL_SIZE
               value: '{{ template "seleniumGrid.autoscaling.distributor.threadPoolSize" $ }}'
+            {{- end }}
+            {{- if not (empty (include "seleniumGrid.autoscaling.distributor.slotSelector" $)) }}
+            - name: SE_DISTRIBUTOR_SLOT_SELECTOR
+              value: {{ include "seleniumGrid.autoscaling.distributor.slotSelector" $ | quote }}
             {{- end }}
           {{- with .Values.hub.extraEnvironmentVariables }}
             {{- tpl (toYaml .) $ | nindent 12 }}

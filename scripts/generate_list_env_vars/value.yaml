@@ -18,6 +18,8 @@
   default: ''
 - name: SE_DISTRIBUTOR_PORT
   default: '5553'
+- name: SE_DISTRIBUTOR_SLOT_SELECTOR
+  default: ''
 - name: SE_DRAIN_AFTER_SESSION_COUNT
   default: '0'
 - name: SE_ENABLE_BROWSER_LEFTOVERS_CLEANUP
@@ -35,6 +37,10 @@
 - name: SE_EVENT_BUS_SUBSCRIBE_PORT
   default: '4443'
 - name: SE_EXTERNAL_URL
+  default: ''
+- name: SE_EXTRA_LIBS
+  default: ''
+- name: SE_FFMPEG_THREADS
   default: ''
 - name: SE_FRAME_RATE
   default: '15'
@@ -78,14 +84,18 @@
   default: ''
 - name: SE_NODE_BROWSER_VERSION
   default: stable
+- name: SE_NODE_CONNECTION_LIMIT_PER_SESSION
+  default: '10'
 - name: SE_NODE_CONTAINER_NAME
   default: ''
+- name: SE_NODE_DELETE_SESSION_ON_UI
+  default: 'true'
 - name: SE_NODE_DOCKER_CONFIG_FILENAME
   default: docker.toml
 - name: SE_NODE_ENABLE_CDP
   default: ''
 - name: SE_NODE_ENABLE_MANAGED_DOWNLOADS
-  default: ''
+  default: 'true'
 - name: SE_NODE_GRACEFUL_SHUTDOWN
   default: ''
 - name: SE_NODE_GRID_GRAPHQL_URL
@@ -152,8 +162,10 @@
   default: 'true'
 - name: SE_OTEL_JVM_ARGS
   default: ''
+- name: SE_OTEL_RESOURCE_ATTRIBUTES
+  default: ''
 - name: SE_OTEL_SERVICE_NAME
-  default: selenium-event-bus
+  default: selenium-router
 - name: SE_OTEL_TRACES_EXPORTER
   default: otlp
 - name: SE_PRESET
@@ -240,6 +252,10 @@
   default: /tmp/supervisord.pid
 - name: SE_SUPERVISORD_START_RETRIES
   default: '5'
+- name: SE_SUPERVISORD_UNIX_SERVER_PASSWORD
+  default: secret
+- name: SE_UPDATE_CHROME_COMPONENTS
+  default: ''
 - name: SE_UPLOAD_COMMAND
   default: ''
 - name: SE_UPLOAD_DESTINATION_PREFIX
@@ -250,7 +266,11 @@
   default: ''
 - name: SE_UPLOAD_RETAIN_LOCAL_FILE
   default: ''
+- name: SE_VIDEO_BUFSIZE
+  default: ''
 - name: SE_VIDEO_CONTAINER_NAME
+  default: ''
+- name: SE_VIDEO_CRF
   default: ''
 - name: SE_VIDEO_FILE_NAME
   default: video.mp4
@@ -264,6 +284,8 @@
   default: ''
 - name: SE_VIDEO_INTERNAL_UPLOAD
   default: 'true'
+- name: SE_VIDEO_MAXRATE
+  default: ''
 - name: SE_VIDEO_POLL_INTERVAL
   default: '1'
 - name: SE_VIDEO_RECORD_STANDALONE

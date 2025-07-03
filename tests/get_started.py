@@ -1,9 +1,10 @@
 import sys
 import time
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.edge.options import Options as EdgeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 if len(sys.argv) < 2:
     print("Usage: python3 get_started.py [chrome|firefox|edge]")
@@ -20,6 +21,7 @@ else:
 
 import concurrent.futures
 
+
 def run_browser_instance(browser, grid_url):
     options = None
     if browser == "chrome":
@@ -29,7 +31,7 @@ def run_browser_instance(browser, grid_url):
     elif browser == "edge":
         options = EdgeOptions()
     options.enable_bidi = True
-    options.enable_downloads = True
+    options.enable_downloads = False
 
     while True:
         driver = webdriver.Remote(
@@ -40,6 +42,7 @@ def run_browser_instance(browser, grid_url):
         print(driver.title)
         time.sleep(100)
         driver.quit()
+
 
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
     for _ in range(3):

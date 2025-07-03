@@ -1,6 +1,6 @@
 # selenium-grid
 
-![Version: 0.44.0](https://img.shields.io/badge/Version-0.44.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.33.0-20250525](https://img.shields.io/badge/AppVersion-4.33.0--20250525-informational?style=flat-square)
+![Version: 0.44.2](https://img.shields.io/badge/Version-0.44.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.33.0-20250606](https://img.shields.io/badge/AppVersion-4.33.0--20250606-informational?style=flat-square)
 
 A Helm chart for creating a Selenium Grid Server in Kubernetes
 
@@ -23,7 +23,7 @@ A Helm chart for creating a Selenium Grid Server in Kubernetes
 | https://jaegertracing.github.io/helm-charts | jaeger | ^3 |
 | https://kedacore.github.io/charts | keda | ^2.17 |
 | https://kubernetes.github.io/ingress-nginx | ingress-nginx | ^4 |
-| https://prometheus-community.github.io/helm-charts | kube-prometheus-stack | ^72.0.0 |
+| https://prometheus-community.github.io/helm-charts | kube-prometheus-stack | ^75.0.0 |
 
 ## Values
 
@@ -31,9 +31,9 @@ A Helm chart for creating a Selenium Grid Server in Kubernetes
 |-----|------|---------|-------------|
 | global.K8S_PUBLIC_IP | string | `""` | Public IP of the host running Kubernetes cluster. This is used to access the Selenium Grid from outside the cluster when ingress is disabled or enabled without a hostname is set. This is part of constructing SE_NODE_GRID_URL and rewrite URL of `se:vnc`, `se:cdp` in the capabilities when `ingress.hostname` is unset |
 | global.seleniumGrid.imageRegistry | string | `"selenium"` | Image registry for all selenium components |
-| global.seleniumGrid.imageTag | string | `"4.33.0-20250525"` | Image tag for all selenium components |
-| global.seleniumGrid.nodesImageTag | string | `"4.33.0-20250525"` | Image tag for browser's nodes |
-| global.seleniumGrid.videoImageTag | string | `"ffmpeg-7.1-20250525"` | Image tag for browser's video recorder |
+| global.seleniumGrid.imageTag | string | `"4.33.0-20250606"` | Image tag for all selenium components |
+| global.seleniumGrid.nodesImageTag | string | `"4.33.0-20250606"` | Image tag for browser's nodes |
+| global.seleniumGrid.videoImageTag | string | `"ffmpeg-7.1-20250606"` | Image tag for browser's video recorder |
 | global.seleniumGrid.kubectlImage | string | `"bitnami/kubectl:latest"` | kubectl image is used to execute kubectl commands in utility jobs |
 | global.seleniumGrid.imagePullSecret | string | `""` | Pull secret for all components, can be overridden individually |
 | global.seleniumGrid.logLevel | string | `"INFO"` | Log level for all components. Possible values describe here: https://www.selenium.dev/documentation/grid/configuration/cli_options/#logging |
@@ -219,6 +219,7 @@ A Helm chart for creating a Selenium Grid Server in Kubernetes
 | components.distributor.imagePullPolicy | string | `"IfNotPresent"` | Image pull policy (see https://kubernetes.io/docs/concepts/containers/images/#updating-images) |
 | components.distributor.imagePullSecret | string | `""` | Image pull secret (see https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) |
 | components.distributor.newSessionThreadPoolSize | string | `nil` | Configure fixed-sized thread pool for the Distributor to create new sessions as it consumes new session requests from the queue |
+| components.distributor.slotSelectorStrategy | string | `""` | Full class name of non-default slot selector. This is used to select a slot in a Node once the Node has been matched |
 | components.distributor.extraEnvironmentVariables | list | `[]` | Specify extra environment variables for Distributor |
 | components.distributor.extraEnvFrom | list | `[]` | Specify extra environment variables from ConfigMap and Secret for Distributor |
 | components.distributor.affinity | object | `{}` | Specify affinity for distributor pods, this overwrites global.seleniumGrid.affinity parameter |
@@ -340,6 +341,7 @@ A Helm chart for creating a Selenium Grid Server in Kubernetes
 | hub.readinessProbe | object | `{"enabled":true,"failureThreshold":10,"initialDelaySeconds":12,"path":"/readyz","periodSeconds":10,"successThreshold":1,"timeoutSeconds":10}` | Readiness probe settings |
 | hub.livenessProbe | object | `{"enabled":true,"failureThreshold":30,"initialDelaySeconds":60,"path":"/readyz","periodSeconds":60,"successThreshold":1,"timeoutSeconds":60}` | Liveness probe settings |
 | hub.subPath | string | `""` | Custom sub path for the hub deployment |
+| hub.slotSelectorStrategy | string | `""` | Full class name of non-default slot selector. This is used to select a slot in a Node once the Node has been matched |
 | hub.extraEnvironmentVariables | list | `[]` | Custom environment variables for selenium-hub |
 | hub.extraEnvFrom | list | `[]` | Custom environment variables by sourcing entire configMap, Secret, etc. for selenium-hub |
 | hub.extraVolumeMounts | list | `[]` | Extra volume mounts for Hub container |
@@ -390,6 +392,8 @@ A Helm chart for creating a Selenium Grid Server in Kubernetes
 | autoscaling.enabled | bool | `false` | Enable autoscaling. Implies installing KEDA |
 | autoscaling.enableWithExistingKEDA | bool | `false` | Enable autoscaling without automatically installing KEDA |
 | autoscaling.scalingType | string | `"job"` | Which type of KEDA scaling to use: job or deployment |
+| autoscaling.setReplicasInSpec | bool | `true` | Force remove replicas in deployment spec in case ArgoCD with AutoSync enabled will try to resolve back to desired state |
+| autoscaling.slotSelectorStrategy | string | `"org.openqa.selenium.grid.distributor.selector.GreedySlotSelector"` | Strategy for Selenium Hub/Distributor select slot to assign to a new session. |
 | autoscaling.authenticationRef | object | `{"annotations":{"helm.sh/hook":"post-install,post-upgrade,post-rollback","helm.sh/hook-weight":"0"},"name":""}` | Specify an external KEDA TriggerAuthentication resource is used for scaler triggers config. Apply for all browser nodes |
 | autoscaling.useCachedMetrics | bool | `false` | Enables caching of metric values during polling interval (as specified in .spec.pollingInterval, the default: false in KEDA). |
 | autoscaling.triggerName | string | `""` | Set trigger name. |
@@ -681,7 +685,7 @@ A Helm chart for creating a Selenium Grid Server in Kubernetes
 | videoRecorder.extraVolumeMounts | list | `[]` | Custom video recorder back-end scripts (video.sh, video_ready.py, etc.) further by ConfigMap. NOTE: For the mount point with the name "video", or "video-scripts", it will override the default. For other names, it will be appended. |
 | videoRecorder.extraVolumes | list | `[]` | Extra volumes for video recorder pod |
 | videoRecorder.s3 | object | `{"args":[],"command":[],"extraEnvironmentVariables":[],"imageName":"aws-cli","imagePullPolicy":"IfNotPresent","imageRegistry":"bitnami","imageTag":"latest","securityContext":{"runAsUser":0}}` | Container spec for the uploader if above it is defined as "uploader.name: s3" |
-| customLabels | object | `{}` | Custom labels for k8s resources |
+| customLabels | object | `{}` | Add more labels to all resources created by this chart or override existing label keys |
 | videoManager.enabled | bool | `false` | Enable video manager |
 | videoManager.nameOverride | string | `""` | Override deployment name of video manager |
 | videoManager.ingress.enabled | bool | `true` | Enable ingress resource to access the file browser |

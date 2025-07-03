@@ -2,6 +2,13 @@
 #
 # IMPORTANT: Change this file only in directory Standalone!
 
+# Check if Chrome components update is enabled
+if [ "${SE_UPDATE_CHROME_COMPONENTS}" = "true" ] && [ -f /opt/bin/update-chrome-components.sh ]; then
+  echo "Chrome components update enabled, checking for updates..."
+  echo "Note that after the container gets restarted, updated binaries will be lost unless you call the update script within the build container process."
+  /opt/bin/update-chrome-components.sh
+fi
+
 # Start the pulseaudio server
 pulseaudio -D --exit-idle-time=-1
 
@@ -72,6 +79,10 @@ if [ ! -z "$SE_NODE_HEARTBEAT_PERIOD" ]; then
   append_se_opts "--heartbeat-period" "${SE_NODE_HEARTBEAT_PERIOD}"
 fi
 
+if [ "$SE_NODE_DELETE_SESSION_ON_UI" = "true" ]; then
+  append_se_opts "--delete-session-on-ui" "true"
+fi
+
 if [ ! -z "$SE_LOG_LEVEL" ]; then
   append_se_opts "--log-level" "${SE_LOG_LEVEL}"
 fi
@@ -117,6 +128,10 @@ if [ ! -z "$SE_REJECT_UNSUPPORTED_CAPS" ]; then
   append_se_opts "--reject-unsupported-caps" "${SE_REJECT_UNSUPPORTED_CAPS}"
 fi
 
+if [ ! -z "$SE_DISTRIBUTOR_SLOT_SELECTOR" ]; then
+  append_se_opts "--slot-selector" "${SE_DISTRIBUTOR_SLOT_SELECTOR}"
+fi
+
 if [ ! -z "$SE_NEW_SESSION_THREAD_POOL_SIZE" ]; then
   append_se_opts "--newsession-threadpool-size" "${SE_NEW_SESSION_THREAD_POOL_SIZE}"
 fi
@@ -142,7 +157,7 @@ if [ "${SE_ENABLE_TRACING}" = "true" ] && [ -n "${SE_OTEL_EXPORTER_ENDPOINT}" ];
   fi
   echo "Tracing is enabled"
   if [ -n "$SE_OTEL_SERVICE_NAME" ]; then
-    SE_OTEL_JVM_ARGS="$SE_OTEL_JVM_ARGS -Dotel.resource.attributes=service.name=${SE_OTEL_SERVICE_NAME}"
+    SE_OTEL_JVM_ARGS="$SE_OTEL_JVM_ARGS -Dotel.resource.attributes=service.name=${SE_OTEL_SERVICE_NAME}${SE_OTEL_RESOURCE_ATTRIBUTES:+,${SE_OTEL_RESOURCE_ATTRIBUTES}}"
   fi
   if [ -n "$SE_OTEL_TRACES_EXPORTER" ]; then
     SE_OTEL_JVM_ARGS="$SE_OTEL_JVM_ARGS -Dotel.traces.exporter=${SE_OTEL_TRACES_EXPORTER}"

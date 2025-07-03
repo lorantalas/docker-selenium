@@ -78,7 +78,7 @@ jobs:
       - name: Build images
         uses: nick-invision/retry@master
         with:
-          timeout_minutes: 90
+          timeout_minutes: 160
           max_attempts: 3
           retry_wait_seconds: 60
           command: PLATFORMS="${PLATFORMS}" VERSION="${GRID_VERSION}" BUILD_DATE=${BUILD_DATE} make build
@@ -141,7 +141,7 @@ jobs:
           command: make chart_release
       - name: Create Nightly Release
         id: create_release
-        uses: softprops/action-gh-release@v2.2.2
+        uses: softprops/action-gh-release@v2.3.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ env.BASE_RELEASE }}

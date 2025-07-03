@@ -202,6 +202,16 @@ based on sum of maxReplicaCount of all enabled Nodes in autoscaling
 {{- $threadPoolSize -}}
 {{- end -}}
 
+{{- define "seleniumGrid.autoscaling.distributor.slotSelector" -}}
+{{- $slotSelector := "" -}}
+{{- if eq (include "seleniumGrid.useKEDA" $) "true" -}}
+{{- $slotSelector = $.Values.autoscaling.slotSelectorStrategy -}}
+{{- else -}}
+{{- $slotSelector = $.Values.isolateComponents | ternary $.Values.components.distributor.slotSelectorStrategy $.Values.hub.slotSelectorStrategy -}}
+{{- end -}}
+{{- $slotSelector -}}
+{{- end -}}
+
 {{/*
 Common autoscaling spec template
 */}}
@@ -304,11 +314,8 @@ template:
     labels:
       app: {{ .name }}
       app.kubernetes.io/name: {{ .name }}
-      {{- include "seleniumGrid.commonLabels" . | nindent 6 }}
+      {{- include "seleniumGrid.commonLabels" $ | nindent 6 }}
       {{- with .node.labels }}
-        {{- toYaml . | nindent 6 }}
-      {{- end }}
-      {{- with $.Values.customLabels }}
         {{- toYaml . | nindent 6 }}
       {{- end }}
     annotations:
@@ -398,6 +405,8 @@ template:
         {{- end }}
           - name: SE_OTEL_SERVICE_NAME
             value: {{ .name | quote }}
+          - name: SE_OTEL_RESOURCE_ATTRIBUTES
+            value: {{ include "seleniumGrid.tracing.attributes" $ | quote }}
           - name: SE_NODE_HOST
             valueFrom:
               fieldRef:
